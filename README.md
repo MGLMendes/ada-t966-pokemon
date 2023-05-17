@@ -6,7 +6,12 @@
 
 API com 3 endpoints disponíveis e x% de cobertura de testes realizados com JUnit e Mockito
 
+Para começar clone o repositório: https://github.com/MGLMendes/ada-t966-pokemon
+
+Rode a aplicação Spring Boot
+
 Endpoints disponíveis:
+
 1.
 GET -> localhost:8080/pokemon/{pokemonName} 
 Endpoint que encontra do Pokemon escolhido trazendo alguns de suas características. Troque onde está escrito {pokemonName} pelo nome do Pokemon.
