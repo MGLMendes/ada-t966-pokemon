@@ -10,18 +10,17 @@ Para começar clone o repositório: https://github.com/MGLMendes/ada-t966-pokemo
 
 Rode a aplicação Spring Boot
 
-Endpoints disponíveis:
-
+Endpoints disponíveis: <br/>
 1.
-GET -> localhost:8080/pokemon/{pokemonName} 
+GET -> localhost:8080/pokemon/{pokemonName} <br/>
 Endpoint que encontra do Pokemon escolhido trazendo alguns de suas características. Troque onde está escrito {pokemonName} pelo nome do Pokemon.
 
 2.
-GET -> localhost:8080/pokemon/{pokemonName}/evolution
+GET -> localhost:8080/pokemon/{pokemonName}/evolution <br/>
 Endpoint que descreve todas as evoluções do Pokemon escolhido. Troque onde está escrito {pokemonName} pelo nome do Pokemon.
 
 3.
-POST -> localhost:8080/pokemon/battle 
+POST -> localhost:8080/pokemon/battle <br/>
 Exemplo de body:
 {
   "challenger": "charmander",
