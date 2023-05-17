@@ -1,7 +1,7 @@
 package br.com.ada.apipokemontester.service;
 
+import br.com.ada.apipokemontester.domain.exception.PokemonIncorretoException;
 import br.com.ada.apipokemontester.domain.model.*;
-import br.com.ada.apipokemontester.domain.model.evolution.EvolutionChain;
 import br.com.ada.apipokemontester.domain.model.evolution.EvolvesTo;
 import br.com.ada.apipokemontester.domain.model.evolution.PokemonEvolution;
 import br.com.ada.apipokemontester.domain.model.evolution.PokemonEvolutionChainDetails;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,44 +44,87 @@ public class PokemonService {
             }
             return pokemonResponse;
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            throw new PokemonIncorretoException("Esse pokemon não existe!" +
+                    " Verifique se digitou corretamente o nome do Pokemon");
         }
-        return null;
     }
     public PokemonEvolutionResponse getPokemonEvolution(String name) {
 
-        PokemonEvolutionResponse response = new PokemonEvolutionResponse();
+        try {
+            PokemonEvolutionResponse response = new PokemonEvolutionResponse();
 
-        List<String> evolutionNames = response.getEvolutionNames();
+            List<String> evolutionNames = response.getEvolutionNames();
 
-        Pokemon pokemon = getPokemon(name);
+            Pokemon pokemon = getPokemon(name);
 
-        assert pokemon != null;
-        PokemonEvolution evolutionChainUrl = restTemplate.getForObject(
-                BASE_URL+"/pokemon-species/"+pokemon.getId(), PokemonEvolution.class);
+            assert pokemon != null;
+            PokemonEvolution evolutionChainUrl = restTemplate.getForObject(
+                    BASE_URL + "/pokemon-species/" + pokemon.getId(), PokemonEvolution.class);
 
-        assert evolutionChainUrl != null;
+            assert evolutionChainUrl != null;
 
-        String chainUrl = evolutionChainUrl.getEvolutionChainUrl().getUrl();
+            String chainUrl = evolutionChainUrl.getEvolutionChainUrl().getUrl();
 
-        PokemonEvolutionChainDetails evolutionChain = restTemplate.getForObject(chainUrl, PokemonEvolutionChainDetails.class);
-        assert evolutionChain != null;
-        evolutionNames.add(evolutionChain.getChain().getSpecies().getName());
+            PokemonEvolutionChainDetails evolutionChain = restTemplate.getForObject(chainUrl, PokemonEvolutionChainDetails.class);
+            assert evolutionChain != null;
+            evolutionNames.add(evolutionChain.getChain().getSpecies().getName());
 
-        for (EvolvesTo evolves : evolutionChain.getChain().getEvolves_to()) {
-            evolutionNames.add(evolves.getSpecies().getName());
-            for (EvolvesTo evolves1 : evolves.getEvolves_to()) {
-                evolutionNames.add(evolves1.getSpecies().getName());
+            for (EvolvesTo evolves : evolutionChain.getChain().getEvolves_to()) {
+                evolutionNames.add(evolves.getSpecies().getName());
+                for (EvolvesTo evolves1 : evolves.getEvolves_to()) {
+                    evolutionNames.add(evolves1.getSpecies().getName());
+                }
             }
-        }
 
-        return response;
+            return response;
+        } catch (RuntimeException e) {
+            throw new PokemonIncorretoException("Esse pokemon não existe!" +
+                    " Verifique se digitou corretamente o nome do Pokemon");
+        }
     }
 
+    public PokemonBattleResponse getPokemonBattle(PokemonBattle pokemonBattle) {
+        try {
+            Pokemon challenger = getPokemon(pokemonBattle.getChallenger());
+            Pokemon challenged = getPokemon(pokemonBattle.getChallenged());
 
+            List<Integer> challengerStats = new ArrayList<>();
+            List<Integer> challengedStats = new ArrayList<>();
 
+            challenger.getStats().forEach(
+                    stats -> {
+                        challengerStats.add(stats.getBaseStat());
+                    }
+            );
+
+            challenged.getStats().forEach(
+                    stats -> {
+                        challengedStats.add(stats.getBaseStat());
+                    }
+            );
+
+            int somaStatsChalleger = challengerStats.stream().reduce(0, Integer::sum);
+            int somaStatsChalleged = challengedStats.stream().reduce(0, Integer::sum);
+
+            if (somaStatsChalleger > somaStatsChalleged) {
+                return PokemonBattleResponse.builder()
+                        .winner(challenger.getName())
+                        .build();
+            } else if (somaStatsChalleged > somaStatsChalleger) {
+                return PokemonBattleResponse.builder()
+                        .winner(challenged.getName())
+                        .build();
+            } else {
+                return PokemonBattleResponse.builder()
+                        .winner("DRAW")
+                        .build();
+            }
+        } catch (RuntimeException e) {
+            throw new PokemonIncorretoException("Esse pokemon não existe!" +
+                    " Verifique se digitou corretamente o nome do Pokemon");
+        }
+    }
     private Pokemon getPokemon(String name) {
         return restTemplate.getForObject(BASE_URL + "/pokemon/" + name, Pokemon.class);
     }
-
 }
