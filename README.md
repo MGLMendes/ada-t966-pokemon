@@ -21,11 +21,11 @@ Endpoint que descreve todas as evoluções do Pokemon escolhido. Troque onde est
 
 3.<br/>
 POST -> localhost:8080/pokemon/battle <br/>
-Exemplo de body:
-{
-  "challenger": "charmander",
-  "challenged": "pikachu"
-}
+Exemplo de body:<br/>
+{<br/>
+  "challenger": "charmander",<br/>
+  "challenged": "pikachu"<br/>
+}<br/>
 Endpoint que coloca os Pokemons escolhidos em uma batalha. 
 
 ## Espero que goste! 
