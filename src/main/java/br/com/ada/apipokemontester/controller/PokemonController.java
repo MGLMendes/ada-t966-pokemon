@@ -6,7 +6,6 @@ import br.com.ada.apipokemontester.domain.model.PokemonBattleResponse;
 import br.com.ada.apipokemontester.domain.response.PokemonEvolutionResponse;
 import br.com.ada.apipokemontester.domain.response.PokemonResponse;
 import br.com.ada.apipokemontester.service.PokemonService;
-import br.com.ada.apipokemontester.domain.model.Pokemon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,7 @@ public class PokemonController {
     }
 
     @PostMapping("/battle")
-    public ResponseEntity<?> battle(@RequestBody PokemonBattle pokemonBattle) {
+    public ResponseEntity<?> pokemonBattle(@RequestBody PokemonBattle pokemonBattle) {
         try {
             PokemonBattleResponse response = pokemonService.getPokemonBattle(pokemonBattle);
             return ResponseEntity.ok(response);
