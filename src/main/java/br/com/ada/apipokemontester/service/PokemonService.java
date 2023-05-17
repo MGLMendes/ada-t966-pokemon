@@ -1,7 +1,9 @@
 package br.com.ada.apipokemontester.service;
 
 import br.com.ada.apipokemontester.domain.exception.PokemonIncorretoException;
-import br.com.ada.apipokemontester.domain.model.*;
+import br.com.ada.apipokemontester.domain.model.Pokemon;
+import br.com.ada.apipokemontester.domain.model.PokemonBattle;
+import br.com.ada.apipokemontester.domain.model.PokemonBattleResponse;
 import br.com.ada.apipokemontester.domain.model.evolution.EvolvesTo;
 import br.com.ada.apipokemontester.domain.model.evolution.PokemonEvolution;
 import br.com.ada.apipokemontester.domain.model.evolution.PokemonEvolutionChainDetails;
@@ -36,7 +38,6 @@ public class PokemonService {
                 String url = BASE_URL+"/pokemon/"+pokemon.getId()+"/encounters";
 
                 var locationAreas = restTemplate.getForObject(url, LocationAreas[].class);
-
                 assert locationAreas != null;
                 pokemon.setLocationAreas(List.of(locationAreas));
 
