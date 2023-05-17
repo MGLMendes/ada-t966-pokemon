@@ -38,7 +38,6 @@ public class PokemonService {
                 String url = BASE_URL+"/pokemon/"+pokemon.getId()+"/encounters";
 
                 var locationAreas = restTemplate.getForObject(url, LocationAreas[].class);
-                assert locationAreas != null;
                 pokemon.setLocationAreas(List.of(locationAreas));
 
                 BeanUtils.copyProperties(pokemon, pokemonResponse);
@@ -50,7 +49,6 @@ public class PokemonService {
         }
     }
     public PokemonEvolutionResponse getPokemonEvolution(String name) {
-
         try {
             PokemonEvolutionResponse response = new PokemonEvolutionResponse();
 
@@ -58,26 +56,26 @@ public class PokemonService {
 
             Pokemon pokemon = getPokemon(name);
 
-            assert pokemon != null;
             PokemonEvolution evolutionChainUrl = restTemplate.getForObject(
                     BASE_URL + "/pokemon-species/" + pokemon.getId(), PokemonEvolution.class);
-
-            assert evolutionChainUrl != null;
 
             String chainUrl = evolutionChainUrl.getEvolutionChainUrl().getUrl();
 
             PokemonEvolutionChainDetails evolutionChain = restTemplate.getForObject(chainUrl, PokemonEvolutionChainDetails.class);
-            assert evolutionChain != null;
-            evolutionNames.add(evolutionChain.getChain().getSpecies().getName());
+            if (evolutionChain != null) {
+                evolutionNames.add(evolutionChain.getChain().getSpecies().getName());
 
-            for (EvolvesTo evolves : evolutionChain.getChain().getEvolves_to()) {
-                evolutionNames.add(evolves.getSpecies().getName());
-                for (EvolvesTo evolves1 : evolves.getEvolves_to()) {
-                    evolutionNames.add(evolves1.getSpecies().getName());
+                for (EvolvesTo evolves : evolutionChain.getChain().getEvolves_to()) {
+                    evolutionNames.add(evolves.getSpecies().getName());
+                    for (EvolvesTo evolves1 : evolves.getEvolves_to()) {
+                        evolutionNames.add(evolves1.getSpecies().getName());
+                    }
                 }
+                return response;
+            } else {
+                throw new PokemonIncorretoException("Esse pokemon não existe!" +
+                        " Verifique se digitou corretamente o nome do Pokemon");
             }
-
-            return response;
         } catch (RuntimeException e) {
             throw new PokemonIncorretoException("Esse pokemon não existe!" +
                     " Verifique se digitou corretamente o nome do Pokemon");
